@@ -1,7 +1,6 @@
-﻿
-using logic.math;
+﻿using logic.math;
 using logic.util;
-using System.Collections.Generic;
+
 
 namespace game
 {
@@ -92,7 +91,6 @@ namespace game
             //map.Set(hex, tile);
         }
 
-
         public void UpdateMap()
 		{
             random.setIteratedRandomSeed(seed);
@@ -100,13 +98,9 @@ namespace game
             map.Clear();
 
             int tile = LogicTile.SetTerrain(0, TerrainType.Grass);
+
             LogicHexUtils.Line(map, touch1, touch2, tile);
-
-            int tile2 = LogicTile.SetTerrain(0, TerrainType.Sand);
-            LogicHexUtils.Line(map, touch2, touch1, tile2);
-
-
-
+            
             /*
             HexGuideGrid();
             GenerateRooms();
@@ -127,6 +121,9 @@ namespace game
             //tiles.Set(origo.Add(LogicHex.ClockDirection(seed)), tile);
 
         }
+
+
+
 
         public void HexGuideGrid()
         {

@@ -5,7 +5,7 @@ using logic.math;
 namespace logic.util
 {
     
-	public class LogicHex
+	public struct LogicHex
     {
         public readonly int q;
         public readonly int r;
@@ -26,7 +26,7 @@ namespace logic.util
 
         public LogicHex(LogicHex other)
         {
-            Debugger.DoAssert(other != null, "Other is null!");
+            //Debugger.DoAssert(other != null, "Other is null!");
 
             q = other.q;
             r = other.r;
@@ -143,29 +143,7 @@ namespace logic.util
         {
             return string.Format("[{0},{1},{2}]",q,r,s);
         }
-
-        /*public static void Line(LogicIntArray2 tiles, LogicPoint2 start, LogicPoint2 end, int paint)
-        {
-            LogicPoint2 pos = new LogicPoint2(start);
-
-            string debug = "";
-
-            LogicPoint2 diff = end.Sub(start);
-            LogicPoint2 sign = diff.Sign();
-            LogicPoint2 abs = diff.Abs();
-            LogicPoint2 sum = new LogicPoint2(0,0);
-
-
-
-            }
-
-
-
-            return;
-        }*/
-
-
-
+        
         private static int PMod(int value, int modulo)
         {
             value = value % modulo;
@@ -177,137 +155,4 @@ namespace logic.util
 
     };
 
-
-
 }
-
-
-/*
-
-if (dist.x > 0)
-{
-    if (dist.y > 0)
-    {
-        if (dist.x < dist.y)
-            pos = pos.Add(northEast);
-        else
-            pos = pos.Add(east);
-    }
-    else if (dist.y < 0)
-    {
-        if (dist.x > dist.y)
-            pos = pos.Add(southEast);
-        else
-            pos = pos.Add(east);
-    }
-    else
-    {
-        pos = pos.Add(east);
-    }
-}
-else if (dist.x < 0)
-{
-    if (dist.y > 0)
-    {
-        if (dist.x < dist.y)
-            pos = pos.Add(northWest);
-        else
-            pos = pos.Add(west);
-    }
-    else if (dist.y < 0)
-    {
-        if (dist.x > dist.y)
-            pos = pos.Add(southWest);
-        else
-            pos = pos.Add(west);
-    }
-    else
-    {
-        pos = pos.Add(west);
-    }
-}
-else
-{
-    if (dist.y > 0)
-        pos = pos.Add(northEast);
-    else
-        pos = pos.Add(southWest);
-}
-
- */
-
-
-    /*
-        public static void LineLow(LogicIntArray2 tiles, LogicPoint2 start, LogicPoint2 end, int paint)
-        {
-            LogicPoint2 d = end.Sub(start);
-
-            LogicPoint2 inc = new LogicPoint2(1, 1);
-
-            if (d.y < 0) {
-                inc.y = -1;
-                d.y = -d.y;
-            }
-            int D = 2*d.y - d.x;
-
-            int y = start.y;
-            for(int x = start.x; x<end.x; ++x)
-            {
-                tiles.Set(x,y,paint);
-                if (D > 0)
-                {
-                    y += inc.y;
-                    D = D - 2 * d.x;
-                }
-                D = D + 2 * d.y;
-            }
-      
-        }
-
-        public static void LineHigh(LogicIntArray2 tiles, LogicPoint2 start, LogicPoint2 end, int paint)
-        {
-            LogicPoint2 d = end.Sub(start);
-
-            LogicPoint2 inc = new LogicPoint2(1, 1);
-
-            if (d.x < 0)
-            {
-                inc.x = -1;
-                d.y = -d.x;
-            }
-            int D = 2 * d.x - d.y;
-
-            int x = start.x;
-            for (int y = start.y; y < end.y; ++y)
-            {
-                tiles.Set(x, y, paint);
-                if (D > 0)
-                {
-                    x += inc.x;
-                    D = D - 2 * d.y;
-                }
-                D = D + 2 * d.x;
-            }
-        }
-
-        public static void Line2(LogicIntArray2 tiles, LogicPoint2 start, LogicPoint2 end, int paint)
-        {
-            LogicPoint2 diff = end.Sub(start);
-            LogicPoint2 abs = diff.Abs();
-
-            if(abs.y < abs.x)
-            {
-                if (start.x > end.x)
-                    LineLow(tiles, end, start, paint);
-                else
-                    LineLow(tiles, start, end, paint);
-            }
-            else
-            {
-                if (start.x > end.x)
-                    LineHigh(tiles, end, start, paint);
-                else
-                    LineHigh(tiles, start, end, paint);
-            }
-        }
-        */

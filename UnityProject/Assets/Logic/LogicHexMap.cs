@@ -48,25 +48,25 @@ namespace logic.util
             int absR = LogicMath.abs(diff.r);
             int absS = LogicMath.abs(diff.s);
 
-            int distance = (absQ + absR + absS) / 2;
-
-            LogicHex longAxes;
-            LogicHex shortAxes;
             bool flip = false;
-            int longLength = 0;
-            int shortLength = 0;
+            int longDistance;
+            int shortDistance;
 
+            int longQ, longR, shortQ, shortR;
 
             if (absQ > absR)
             {
-                if(absR > absS)
+                if (absR > absS)
                 {
                     //q,r,s
                     flip = diff.q < 0;
-                    longAxes = new LogicHex(1, -1, 0);
-                    shortAxes = new LogicHex(1, 0, -1);
-                    longLength = absR;
-                    shortLength = absS;
+                    longDistance = absR;
+                    shortDistance = absS;
+
+                    longQ = 1;
+                    longR = -1;
+                    shortQ = 1;
+                    shortR = 0;
                 }
                 else
                 {
@@ -74,19 +74,25 @@ namespace logic.util
                     {
                         //s,q,r
                         flip = diff.s < 0;
-                        longAxes = new LogicHex(-1, 0, 1);
-                        shortAxes = new LogicHex(0, -1, 1);
-                        longLength = absQ;
-                        shortLength = absR;
+                        longDistance = absQ;
+                        shortDistance = absR;
+
+                        longQ = -1;
+                        longR = 0;
+                        shortQ = 0;
+                        shortR = -1;
                     }
                     else
                     {
                         //q,s,r
                         flip = diff.q < 0;
-                        longAxes = new LogicHex(1, 0, -1);
-                        shortAxes = new LogicHex(1, -1, 0);
-                        longLength = absS;
-                        shortLength = absR;
+                        longDistance = absS;
+                        shortDistance = absR;
+
+                        longQ = 1;
+                        longR = 0;
+                        shortQ = 1;
+                        shortR = -1;
                     }
                 }
             }
@@ -98,84 +104,86 @@ namespace logic.util
                     {
                         //r,s,q
                         flip = diff.r < 0;
-                        longAxes = new LogicHex(0, 1, -1);
-                        shortAxes = new LogicHex(-1, 1, 0);
-                        longLength = absS;
-                        shortLength = absQ;
+                        longDistance = absS;
+                        shortDistance = absQ;
+
+                        longQ = 0;
+                        longR = 1;
+                        shortQ = -1;
+                        shortR = 1;
                     }
                     else
                     {
                         //r,q,s
                         flip = diff.r < 0;
-                        longAxes = new LogicHex(-1, 1, 0);
-                        shortAxes = new LogicHex(0, 1, -1);
-                        longLength = absQ;
-                        shortLength = absS;
+                        longDistance = absQ;
+                        shortDistance = absS;
+
+                        longQ = -1;
+                        longR = 1;
+                        shortQ = 0;
+                        shortR = 1;
                     }
                 }
                 else
                 {
                     //s,r,q
                     flip = diff.s < 0;
-                    longAxes = new LogicHex(0, -1 , 1);
-                    shortAxes = new LogicHex(-1, 0, 1);
-                    longLength = absR;
-                    shortLength = absQ;
+                    longDistance = absR;
+                    shortDistance = absQ;
+
+                    longQ = 0;
+                    longR = -1;
+                    shortQ = -1;
+                    shortR = 0;
                 }
             }
 
             if (flip)
             {
-                longAxes = longAxes.Mul(-1);
-                shortAxes = shortAxes.Mul(-1);
+                longQ = -longQ;
+                longR = -longR;
+                shortQ = -shortQ;
+                shortR = -shortR;
             }
 
+            int q = a.q;
+            int r = a.r;
 
-            int dx = longLength;
-            int dy = shortLength;
+            int distance = longDistance + shortDistance;
+            int bias = shortDistance - longDistance;
+            int longBiasStep = -2 * longDistance;
+            int shortBiasStep = 2 * shortDistance;
 
-
-            LogicHex pos = new LogicHex(a);
-            int D = dy - dx;
-
-            for (int i = 0; i<distance; ++i)
+            for (int i = 0; i < distance; ++i)
             {
-                if (D > 0)
+                /*if (bias == 0)
                 {
-                    D = D - 2 * dx;
-                    pos = pos.Add(shortAxes);
+                    //This is the case when we hit right between two hex tiles.
+                    //Depending on the use case you might want to:
+                    //- Draw either
+                    //- Draw both
+                    //- Draw neither
+                    //- Bias axis direction so that a => b is allways same as b => a
+                    // Here I have chosen to just prioritice shortAxes
+                }*/
+                if (bias > 0)
+                {
+                    bias += longBiasStep;
+                    q += shortQ;
+                    r += shortR;
                 }
                 else
                 {
-                    D = D + 2 * dy;
-                    pos = pos.Add(longAxes);
+                    bias += shortBiasStep;
+                    q += longQ;
+                    r += longR;
                 }
 
-                map.Set(pos, value);
+                map.Set(q, r, value);
             }
-            /*
- 
-plotLine(x0,y0, x1,y1)
-  dx = x1 - x0
-  dy = y1 - y0
-  D = 2*dy - dx
-  y = y0
-
-  for x from x0 to x1
-    plot(x,y)
-    if D > 0
-       y = y + 1
-       D = D - 2*dx
-    end if
-    D = D + 2*dy
-
-    */
-    
 
         }
-
-
-
 
     }
 
