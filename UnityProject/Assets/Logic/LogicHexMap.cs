@@ -136,7 +136,7 @@ namespace logic.util
 
 
             LogicHex pos = new LogicHex(a);
-            int D = 2 * dy - dx;
+            int D = dy - dx;
 
             for (int i = 0; i<distance; ++i)
             {
@@ -170,21 +170,7 @@ plotLine(x0,y0, x1,y1)
     D = D + 2*dy
 
     */
-
-
-            /*for (int i = 0; i < longLength; ++i)
-            {
-                pos = pos.Add(longAxes);
-                map.Set(pos, value);
-            }
-
-            for (int i = 0; i < shortLength; ++i)
-            {
-                pos = pos.Add(shortAxes);
-                map.Set(pos, value);
-            }*/
-
-
+    
 
         }
 
