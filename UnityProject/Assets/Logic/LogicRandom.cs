@@ -62,6 +62,6 @@ namespace logic.math
 
             return 0;
         }
-        
+
     }
 }

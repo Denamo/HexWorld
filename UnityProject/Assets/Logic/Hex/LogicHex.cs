@@ -7,8 +7,6 @@ namespace logic.util
     
 	public class LogicHex
     {
-
-        
         public readonly int q;
         public readonly int r;
         public readonly int s;
