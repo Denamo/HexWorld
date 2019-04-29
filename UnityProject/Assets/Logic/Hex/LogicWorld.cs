@@ -99,10 +99,12 @@ namespace game
 
             map.Clear();
 
-            int tile = LogicTile.SetTerrain(0, TerrainType.Sand);
-
+            int tile = LogicTile.SetTerrain(0, TerrainType.Grass);
             LogicHexUtils.Line(map, touch1, touch2, tile);
-            
+
+            int tile2 = LogicTile.SetTerrain(0, TerrainType.Sand);
+            LogicHexUtils.Line(map, touch2, touch1, tile2);
+
 
 
             /*

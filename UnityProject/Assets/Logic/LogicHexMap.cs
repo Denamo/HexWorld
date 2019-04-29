@@ -42,9 +42,6 @@ namespace logic.util
                 return;
             }
 
-
-
-
             LogicHex diff = b.Sub(a);
 
             int absQ = LogicMath.abs(diff.q);
@@ -139,22 +136,23 @@ namespace logic.util
 
 
             LogicHex pos = new LogicHex(a);
-            /*int D = 2 * dy - dx;
+            int D = 2 * dy - dx;
 
             for (int i = 0; i<distance; ++i)
             {
-                
                 if (D > 0)
                 {
-                    //pos = pos.Add(shortAxes);
                     D = D - 2 * dx;
+                    pos = pos.Add(shortAxes);
                 }
-                //pos = pos.Add(longAxes);
-                D = D + 2 * dy;
-                
+                else
+                {
+                    D = D + 2 * dy;
+                    pos = pos.Add(longAxes);
+                }
 
                 map.Set(pos, value);
-            }*/
+            }
             /*
  
 plotLine(x0,y0, x1,y1)
@@ -174,7 +172,7 @@ plotLine(x0,y0, x1,y1)
     */
 
 
-            for (int i = 0; i < longLength; ++i)
+            /*for (int i = 0; i < longLength; ++i)
             {
                 pos = pos.Add(longAxes);
                 map.Set(pos, value);
@@ -184,7 +182,7 @@ plotLine(x0,y0, x1,y1)
             {
                 pos = pos.Add(shortAxes);
                 map.Set(pos, value);
-            }
+            }*/
 
 
 
