@@ -59,8 +59,8 @@ namespace game
             return new LogicHex(-s - r, r, s);
         }
 
-        LogicHex touch1 = new LogicHex(0, 0);
-        LogicHex touch2 = new LogicHex(0, 0);
+        LogicHex touch1 = new LogicHex(9, 9);
+        LogicHex touch2 = new LogicHex(9, 9);
         public void TouchHex(LogicHex hex)
         {
             //tiles.Clear();

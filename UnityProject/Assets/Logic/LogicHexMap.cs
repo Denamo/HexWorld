@@ -68,8 +68,8 @@ namespace logic.util
                     flip = diff.q < 0;
                     longAxes = new LogicHex(1, -1, 0);
                     shortAxes = new LogicHex(1, 0, -1);
-                    longLength = absQ;
-                    shortLength = absR;
+                    longLength = absR;
+                    shortLength = absS;
                 }
                 else
                 {
@@ -79,8 +79,8 @@ namespace logic.util
                         flip = diff.s < 0;
                         longAxes = new LogicHex(-1, 0, 1);
                         shortAxes = new LogicHex(0, -1, 1);
-                        longLength = absS;
-                        shortLength = absQ;
+                        longLength = absQ;
+                        shortLength = absR;
                     }
                     else
                     {
@@ -88,8 +88,8 @@ namespace logic.util
                         flip = diff.q < 0;
                         longAxes = new LogicHex(1, 0, -1);
                         shortAxes = new LogicHex(1, -1, 0);
-                        longLength = absQ;
-                        shortLength = absS;
+                        longLength = absS;
+                        shortLength = absR;
                     }
                 }
             }
@@ -103,8 +103,8 @@ namespace logic.util
                         flip = diff.r < 0;
                         longAxes = new LogicHex(0, 1, -1);
                         shortAxes = new LogicHex(-1, 1, 0);
-                        longLength = absR;
-                        shortLength = absS;
+                        longLength = absS;
+                        shortLength = absQ;
                     }
                     else
                     {
@@ -112,8 +112,8 @@ namespace logic.util
                         flip = diff.r < 0;
                         longAxes = new LogicHex(-1, 1, 0);
                         shortAxes = new LogicHex(0, 1, -1);
-                        longLength = absR;
-                        shortLength = absQ;
+                        longLength = absQ;
+                        shortLength = absS;
                     }
                 }
                 else
@@ -122,8 +122,8 @@ namespace logic.util
                     flip = diff.s < 0;
                     longAxes = new LogicHex(0, -1 , 1);
                     shortAxes = new LogicHex(-1, 0, 1);
-                    longLength = absS;
-                    shortLength = absR;
+                    longLength = absR;
+                    shortLength = absQ;
                 }
             }
 
