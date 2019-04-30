@@ -13,7 +13,7 @@ namespace game
 		public int foo = 0;
 		public LogicHexMap map = new LogicHexMap(19, 19);
 
-		const int HEIGHT_SCALE = 256;
+		const int HEIGHT_SCALE = 8;
 			
 		public void Start()
 		{
@@ -35,16 +35,20 @@ namespace game
         public const int HALF_TILE_SIZE = TILE_SIZE / 2;
         public const int HEXAGON_OFFSET = 130;
 
-        public static LogicPoint3 HexToLogicPos(LogicHex hex)
+        public LogicPoint3 HexToLogicPos(LogicHex hex)
         {
-            return HexToLogicPos(hex, 0);
+            int tile = map.Get(hex.q,hex.r);
+            int height = LogicTile.GetHeight(tile);
+            ///int tile = LogicTile.SetTerrain(0, TerrainType.Grass);
+
+            return HexToLogicPos(hex, height);
         }
 
         public static LogicPoint3 HexToLogicPos(LogicHex hex, int height)
         {
             LogicPoint3 p = new LogicPoint3();
             p.x = (hex.r * TILE_SIZE) + (hex.s * HALF_TILE_SIZE);
-            p.y = height;
+            p.y = height * HEIGHT_SCALE;
             p.z = -hex.s * HEXAGON_OFFSET;
 
             return p;
@@ -97,10 +101,12 @@ namespace game
 
             map.Clear();
 
-            int tile = LogicTile.SetTerrain(0, TerrainType.Grass);
+            int tile = LogicTile.SetTerrain(0, TerrainType.Sand);
 
             LogicHexUtils.Line(map, touch1, touch2, tile);
-            
+
+            Noise(map, seed);
+
             /*
             HexGuideGrid();
             GenerateRooms();
@@ -140,7 +146,7 @@ namespace game
         }
 
 
-        public static void Noise(LogicIntArray2 tiles, int seed)
+        public static void Noise(LogicHexMap tiles, int seed)
         {
             int i = 0;
             for (int r = 0; r < tiles.height; ++r)
@@ -162,9 +168,9 @@ namespace game
 
                     int room = LogicTile.GetRoom(tile);
 
-                    if (room == 0)
+                    /*if (room == 0)
                         tile = LogicTile.SetTerrain(tile, TerrainType.Grass);
-
+                        */
 
                     /*if (height > 167)
 						tile = LogicTile.SetTerrain(tile, TerrainType.Rock);

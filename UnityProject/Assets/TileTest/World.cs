@@ -38,13 +38,13 @@ public class World : MonoBehaviour
         if (Input.GetKey(KeyCode.UpArrow))
         {
             updateWorld = true;
-            world.SetSeed(world.GetSeed() + 1);
+            world.SetSeed(world.GetSeed() + 1000);
         }
 
         if (Input.GetKey(KeyCode.DownArrow))
         {
             updateWorld = true;
-            world.SetSeed(world.GetSeed() - 1);
+            world.SetSeed(world.GetSeed() - 1000);
         }
 
         if (updateWorld)
@@ -205,7 +205,7 @@ public class World : MonoBehaviour
 
     Vector3 HexToWorldPos(LogicHex hex)
     {
-        LogicPoint3 p = LogicWorld.HexToLogicPos(hex);
+        LogicPoint3 p = world.HexToLogicPos(hex);
         return new Vector3(p.x * tileScaleFactor, p.y * tileScaleFactor, p.z * tileScaleFactor);
     }
 
