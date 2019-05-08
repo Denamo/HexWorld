@@ -29,22 +29,46 @@ public class World : MonoBehaviour
         Render();
     }
 
-
+    int seedStepVelocity = 0;
     void Update()
     {
 
         bool updateWorld = false;
 
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             updateWorld = true;
-            world.SetSeed(world.GetSeed() + 1000);
+            world.StepForward();
         }
 
-        if (Input.GetKey(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.DownArrow))
         {
             updateWorld = true;
-            world.SetSeed(world.GetSeed() - 1000);
+            world.StepBackward();
+        }
+
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            seedStepVelocity -= 100;
+            if (seedStepVelocity < -10000)
+                seedStepVelocity = -10000;
+
+        }
+        else if (Input.GetKey(KeyCode.RightArrow))
+        {
+            seedStepVelocity += 100;
+            if (seedStepVelocity > 10000)
+                seedStepVelocity = 10000;
+        }
+        else
+        {
+            seedStepVelocity = seedStepVelocity / 2;
+        }
+
+        if (seedStepVelocity != 0)
+        {
+            updateWorld = true;
+            world.SetSeed(world.GetSeed() + seedStepVelocity);
         }
 
         if (updateWorld)

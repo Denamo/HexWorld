@@ -22,7 +22,7 @@ namespace logic.debug
         public static void DoAssert(bool test, string message)
         {
             if(!test)
-                Debug.LogError(message);
+                Error(message);
         }
 
         public static void print(string message)

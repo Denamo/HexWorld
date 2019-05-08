@@ -8,11 +8,27 @@ namespace logic.util
 
 	public class LogicHexMap : LogicArray2<int>
 	{
-		public LogicHexMap(int sizeQ, int sizeR) : this(sizeQ, sizeR, 0)
-		{
-		}
+        public readonly int sizeShift = 0;
 
-		public LogicHexMap(int sizeQ, int sizeR, int defaultValue) : base(sizeQ, sizeR, defaultValue)
+		public LogicHexMap(int size) : this(size, size, 0)
+		{
+            if (IsPowerOfTwo(size))
+            {
+                while(size != 1)
+                {
+                    ++sizeShift;
+                    size >>= 1;
+                }
+
+            }
+            else
+            {
+                Debugger.Error("Size must be power of two!");
+            }
+            
+        }
+
+        public LogicHexMap(int sizeQ, int sizeR, int defaultValue) : base(sizeQ, sizeR, defaultValue)
 		{
 		}
 
@@ -26,12 +42,48 @@ namespace logic.util
             return Get(pos.q, pos.r);
         }
 
+        public override void Set(int x, int y, int value)
+        {
+            
+            array[x + (y << sizeShift)] = value;
+        }
+
+        public override int Get(int x, int y)
+        {
+            return array[x + (y << sizeShift)];
+        }
+
+        static bool IsPowerOfTwo(int x)
+        {
+            return x != 0 && ((x & (x - 1)) == 0);
+        }
 
     }
 
 
     public static class LogicHexUtils
     {
+
+        public static void Circle(LogicHexMap map, LogicHex pos, int radius, int value)
+        {
+            int diameter = radius * 2 + 1;
+            int q = pos.q - radius;
+            int r = pos.r - radius;
+            int upperLimit = (diameter-1) + (diameter-1) - radius;
+
+            for (int iq = 0; iq < diameter; ++iq)
+            {
+                for (int ir = 0; ir < diameter; ++ir)
+                {
+                    int sum = ir + iq;
+                    if (sum < radius || sum > upperLimit)
+                        continue;
+
+                    map.Set(q + iq, r + ir, value);
+                }
+            }
+        }
+
 
         public static void Line(LogicHexMap map, LogicHex a, LogicHex b, int value)
         {
@@ -184,6 +236,10 @@ namespace logic.util
             }
 
         }
+
+
+
+
 
     }
 

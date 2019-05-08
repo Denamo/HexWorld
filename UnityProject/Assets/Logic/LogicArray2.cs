@@ -96,7 +96,7 @@ namespace logic.util
 			return x >= 0 && x < width && y >= 0 && y < height;
 		}
 
-		public T Get(int x, int y)
+		public virtual T Get(int x, int y)
 		{
 			if (x < 0 || x >= width)
 			{
@@ -139,7 +139,7 @@ namespace logic.util
 			return array[x + y * width];
 		}
 
-		public void Set(int x, int y, T value)
+		public virtual void Set(int x, int y, T value)
 		{
 			if (x < 0 || x >= width)
 			{
@@ -182,7 +182,7 @@ namespace logic.util
 			array[x + y * width] = value;
 		}
 
-		private static int PMod(int value, int modulo)
+        private static int PMod(int value, int modulo)
 		{
 			value = value % modulo;
 			if (value < 0)

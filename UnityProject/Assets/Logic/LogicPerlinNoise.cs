@@ -7,7 +7,30 @@ namespace logic.util
 	public static class LogicPerlinNoise
 	{
 
-		public const int SCALE = 65536;
+        public static int minNoise = int.MaxValue;
+        public static int maxNoise = int.MinValue;
+
+
+        public static int Noise(int x, int y, int z, int maxScale)
+        {
+            int noise = Noise(x, y, z);
+
+            if (noise < minNoise)
+                minNoise = noise;
+
+            if (noise > maxNoise)
+                maxNoise = noise;
+
+            return ScaleNoise(noise, maxScale);
+        }
+
+        public static int ScaleNoise(int noise, int max)
+        {
+            int k = (SCALE * 2) / max;
+            return (noise + SCALE) / k;
+        }
+
+        public const int SCALE = 65536;
 
 		//Returns noise in range -65536 ... 65535
 		public static int Noise(int x, int y, int z)

@@ -19,17 +19,17 @@ namespace game
 		//32 bit configuration mapping
 
 		const int BITS_TERRAIN = 0x000000FF;
-		const int BITS_HEIGHT = 0x0000FF00;
+		const int BITS_ALTITUDE = 0x0000FF00;
         const int BITS_ROOM = 0x00FF0000;
         const int BIT_EXPLORED = 0x10000000;
         const int BIT_WALKABLE = 0x20000000;
 
         const int BITS_SHIFT_TERRAIN = 0;
-        const int BITS_SHIFT_HEIGHT = 8;
+        const int BITS_SHIFT_ALTITUDE = 8;
         const int BITS_SHIFT_ROOM = 16;
 
 		public const int MAX_TERRAIN = 255;
-        public const int MAX_HEIGHT = 255;
+        public const int MAX_ALTITUDE = 255;
         public const int MAX_ROOM = 255;
 
         public static int SetTerrain(int tile, TerrainType terrain)
@@ -43,14 +43,14 @@ namespace game
 			return (TerrainType)((tile & BITS_TERRAIN) >> BITS_SHIFT_TERRAIN);
 		}
 
-        public static int SetHeight(int tile, int val)
+        public static int SetAltitude(int tile, int val)
 		{
-			Assert(val >= 0 && val <= MAX_HEIGHT);
-			return (tile & ~BITS_HEIGHT) | ((val << BITS_SHIFT_HEIGHT) & BITS_HEIGHT);
+			Assert(val >= 0 && val <= MAX_ALTITUDE);
+			return (tile & ~BITS_ALTITUDE) | ((val << BITS_SHIFT_ALTITUDE) & BITS_ALTITUDE);
 		}
-		public static int GetHeight(int tile)
+		public static int GetAltitude(int tile)
 		{
-			return (int)((tile & BITS_HEIGHT) >> BITS_SHIFT_HEIGHT);
+			return (int)((tile & BITS_ALTITUDE) >> BITS_SHIFT_ALTITUDE);
 		}
 
         public static int SetRoom(int tile, int val)
@@ -96,8 +96,8 @@ namespace game
 			tile = SetTerrain(tile, TerrainType.Rock);
 			Assert(GetTerrain(tile) == TerrainType.Rock);
 
-			tile = SetHeight(tile, MAX_HEIGHT);
-			Assert(GetHeight(tile) == MAX_HEIGHT);
+			tile = SetAltitude(tile, MAX_ALTITUDE);
+			Assert(GetAltitude(tile) == MAX_ALTITUDE);
 
 			tile = SetExplored(tile, true);
 			Assert(IsExplored(tile) == true);
@@ -106,8 +106,8 @@ namespace game
 			tile = SetTerrain(tile, TerrainType.Void);
 			Assert(GetTerrain(tile) == TerrainType.Void);
 
-			tile = SetHeight(tile, 0);
-			Assert(GetHeight(tile) == 0);
+			tile = SetAltitude(tile, 0);
+			Assert(GetAltitude(tile) == 0);
 
 			tile = SetExplored(tile, false);
 			Assert(IsExplored(tile) == false);
@@ -117,7 +117,7 @@ namespace game
 
 		public static void DebugPrint(int data)
 		{
-			Debugger.print(string.Format("Terrain:%d Height:%d Explored:%d", GetTerrain(data), GetHeight(data), IsExplored(data) ? 1 : 0));
+			Debugger.print(string.Format("Terrain:%d Altitude:%d Explored:%d", GetTerrain(data), GetAltitude(data), IsExplored(data) ? 1 : 0));
 		}
 
 		static void Assert(bool test)
