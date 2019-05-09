@@ -178,8 +178,8 @@ public class World : MonoBehaviour
 					RenderTile  tile2 = renderTiles.Get(x, y + 1);
 					RenderTile tile3 = renderTiles.Get(x + 1, y + 1);
 
-					dynamicMesh.SimpleTriangle(tile0.position, tile1.position, tile2.position, tile0.color, tile1.color, tile2.color, tile0.normal, tile1.normal, tile2.normal);
-					dynamicMesh.SimpleTriangle(tile2.position, tile1.position, tile3.position, tile2.color, tile1.color, tile3.color, tile2.normal, tile1.normal, tile3.normal);
+                    RenderTriangle(dynamicMesh, tile0, tile1, tile2);
+                    RenderTriangle(dynamicMesh, tile2, tile1, tile3);
 
 					++index;
 				}
@@ -202,6 +202,114 @@ public class World : MonoBehaviour
         //Debug.Log("NavigationBlob::MeshUpdate duration=" + (Time.realtimeSinceStartup - timer));
 
     }
+
+    public static void RenderTriangle(DynamicMesh mesh, RenderTile a, RenderTile b, RenderTile c)
+    {
+        TerrainType tA = a.GetTerrain();
+        TerrainType tB = b.GetTerrain();
+        TerrainType tC = c.GetTerrain();
+
+        if (tA == tB && tA == tC)
+        {
+            //No terrain transition
+            mesh.SimpleTriangle(a.position, b.position, c.position, a.color, b.color, c.color, a.normal, b.normal, c.normal);
+        }
+        else
+        {
+            //NOTE: Currently I assume height goes: sand, dirt, grass. Height transitions could also be added
+
+            //Terrain transition. TODO: cache all combination
+            if (tB == tC)
+            {
+                //A unique
+                if(tA == TerrainType.Grass && tB == TerrainType.Dirt)
+                {
+                    GrassToDirt(mesh, a, b, c);
+                    return;
+                }
+                else if(tA == TerrainType.Dirt && tB == TerrainType.Grass)
+                {
+                    DirtToGrass(mesh, a, b, c);
+                    return;
+                }
+            }
+            else if(tA == tC)
+            {
+                //B unique
+                if (tB == TerrainType.Grass && tC == TerrainType.Dirt)
+                {
+                    GrassToDirt(mesh, b, c, a);
+                    return;
+                }
+                else if (tB == TerrainType.Dirt && tC == TerrainType.Grass)
+                {
+                    DirtToGrass(mesh, b, c, a);
+                    return;
+                }
+            }
+            else if(tA == tB)
+            {
+                //C unique
+                if (tC == TerrainType.Grass && tA == TerrainType.Dirt)
+                {
+                    GrassToDirt(mesh, c, a, b);
+                    return;
+                }
+                else if (tC == TerrainType.Dirt && tA == TerrainType.Grass)
+                {
+                    DirtToGrass(mesh, c, a, b);
+                    return;
+                }
+            }
+            else
+            {
+                //All unique
+
+            }
+
+            mesh.SimpleTriangle(a.position, b.position, c.position, a.color, b.color, c.color, a.normal, b.normal, c.normal);
+        }
+
+    }
+
+    //a==grass
+    public static void GrassToDirt(DynamicMesh mesh, RenderTile a, RenderTile b, RenderTile c)
+    {
+        Vector3 abMid = (a.position + b.position) * 0.5f;
+        Vector3 acMid = (a.position + c.position) * 0.5f;
+
+        Vector3 abGround = new Vector3(abMid.x, b.position.y, abMid.z);
+        Vector3 acGround = new Vector3(acMid.x, c.position.y, acMid.z);
+
+
+        mesh.SimpleTriangle(a.position, abMid, acMid, a.color, a.color, a.color, a.normal, a.normal, a.normal);
+
+        mesh.SimpleTriangle(acMid, abMid, abGround, a.color, a.color, b.color, c.normal, b.normal, b.normal);
+        mesh.SimpleTriangle(acMid, abGround, acGround, a.color, b.color, c.color, c.normal, b.normal, c.normal);
+
+        mesh.SimpleTriangle(acGround, abGround, b.position, c.color, b.color, b.color, c.normal, b.normal, b.normal);
+        mesh.SimpleTriangle(acGround, b.position, c.position, c.color, b.color, c.color, c.normal, b.normal, c.normal);
+
+    }
+
+    //a==dirt
+    public static void DirtToGrass(DynamicMesh mesh, RenderTile a, RenderTile b, RenderTile c)
+    {
+        Vector3 abMid = (a.position + b.position) * 0.5f;
+        Vector3 acMid = (a.position + c.position) * 0.5f;
+
+        Vector3 abGround = new Vector3(abMid.x, a.position.y, abMid.z);
+        Vector3 acGround = new Vector3(acMid.x, a.position.y, acMid.z);
+
+        mesh.SimpleTriangle(a.position, abGround, acGround, a.color, a.color, a.color, a.normal, a.normal, a.normal);
+
+        mesh.SimpleTriangle(acGround, abGround, abMid, a.color, a.color, b.color, c.normal, b.normal, b.normal);
+        mesh.SimpleTriangle(acGround, abMid, acMid, a.color, b.color, c.color, c.normal, b.normal, c.normal);
+
+        mesh.SimpleTriangle(acMid, abMid, b.position, c.color, b.color, b.color, c.normal, b.normal, b.normal);
+        mesh.SimpleTriangle(acMid, b.position, c.position, c.color, b.color, c.color, c.normal, b.normal, c.normal);
+    }
+
 
     static Color32 mainTextureColor = new Color32(0, 0, 0, 0);
     static Color32 secondTextureColor = new Color32(255, 0, 0, 0);
@@ -248,6 +356,11 @@ public class RenderTile
 	public Vector3 position;
 	public Vector3 normal;
 	public Color32 color;
+
+    public TerrainType GetTerrain()
+    {
+        return LogicTile.GetTerrain(tile);
+    }
 
 	public RenderTile(int tile, Vector3 position, Vector3 normal, Color32 color)
 	{
