@@ -12,12 +12,16 @@ public class World : MonoBehaviour
     Mesh mesh;
     MeshCollider meshCollider = null;
     Material material;
-    
-    public LogicWorld world = new LogicWorld();
+
+    public LogicWorldConfig config = new LogicWorldConfig();
+
+    public LogicWorld world = null;
 
     void Start()
     {
-        world.Start();
+        world = new LogicWorld();
+
+        world.Start(config);
 
         meshRenderer = GetComponent<MeshRenderer>();
         meshFilter = GetComponent<MeshFilter>();
@@ -29,36 +33,27 @@ public class World : MonoBehaviour
         Render();
     }
 
+    public void UpdateWorld()
+    {
+        updateWorld = true;
+    }
+
+    bool updateWorld;
     int seedStepVelocity = 0;
     void Update()
     {
-
-        bool updateWorld = false;
-
-        if (Input.GetKeyDown(KeyCode.UpArrow))
-        {
-            updateWorld = true;
-            world.StepForward();
-        }
-
-        if (Input.GetKeyDown(KeyCode.DownArrow))
-        {
-            updateWorld = true;
-            world.StepBackward();
-        }
-
         if (Input.GetKey(KeyCode.LeftArrow))
         {
             seedStepVelocity -= 100;
-            if (seedStepVelocity < -10000)
-                seedStepVelocity = -10000;
+            if (seedStepVelocity < -5000)
+                seedStepVelocity = -5000;
 
         }
         else if (Input.GetKey(KeyCode.RightArrow))
         {
             seedStepVelocity += 100;
-            if (seedStepVelocity > 10000)
-                seedStepVelocity = 10000;
+            if (seedStepVelocity > 5000)
+                seedStepVelocity = 5000;
         }
         else
         {
@@ -68,11 +63,12 @@ public class World : MonoBehaviour
         if (seedStepVelocity != 0)
         {
             updateWorld = true;
-            world.SetSeed(world.GetSeed() + seedStepVelocity);
+            config.seed += seedStepVelocity;
         }
 
         if (updateWorld)
         {
+            updateWorld = false;
             world.UpdateMap();
             Render();
         }
@@ -90,8 +86,7 @@ public class World : MonoBehaviour
                     if (cursor != null)
                         cursor.transform.position = hit.point;
                     LogicHex hex = WorldToHexPos(hit.point);
-                    //Debug.Log(hit.point + " => " + WorldToHexPos(hit.point));
-
+                    
                     if(Input.GetMouseButton(0))
                         world.TouchHex(hex);
                     else
@@ -103,10 +98,9 @@ public class World : MonoBehaviour
             }
 
         }
-
 		
 	}
-    
+
 	void Render()
 	{
         LogicArray2<int> tiles = world.map;
@@ -174,8 +168,8 @@ public class World : MonoBehaviour
 				for (int x = 0; x < renderTiles.width - 1; ++x)
 				{
 					RenderTile tile0 = renderTiles.Get(x, y);
-					RenderTile  tile1 = renderTiles.Get(x + 1, y);
-					RenderTile  tile2 = renderTiles.Get(x, y + 1);
+					RenderTile tile1 = renderTiles.Get(x + 1, y);
+					RenderTile tile2 = renderTiles.Get(x, y + 1);
 					RenderTile tile3 = renderTiles.Get(x + 1, y + 1);
 
                     RenderTriangle(dynamicMesh, tile0, tile1, tile2);
@@ -186,8 +180,17 @@ public class World : MonoBehaviour
 			}
 
 		}
-		
+
+        //Debug.Log("Triangles:" + dynamicMesh.triangles.Count + "Vertices:" + dynamicMesh.vertices.Count);
+
         Mesh mesh = new Mesh();
+        if (dynamicMesh.vertices.Count > 65535)
+        {
+            //TODO: Chunk support
+            //Debug.LogWarning("Vertex count high forced to use 32 bit index.");
+            mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
+        }
+
         mesh.vertices = dynamicMesh.vertices.ToArray();
         mesh.normals = dynamicMesh.normals.ToArray();
         mesh.triangles = dynamicMesh.triangles.ToArray();
@@ -200,6 +203,7 @@ public class World : MonoBehaviour
 
         meshCollider.sharedMesh = mesh;
         //Debug.Log("NavigationBlob::MeshUpdate duration=" + (Time.realtimeSinceStartup - timer));
+        
 
     }
 

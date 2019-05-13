@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 840008376361871012}
   - component: {fileID: 229684441}
   - component: {fileID: 229684442}
+  - component: {fileID: 480785708}
   m_Layer: 0
   m_Name: HexWorld
   m_TagString: Untagged
@@ -45,6 +46,46 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 191ef11702117af47b1485077b42f960, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cursor: {fileID: 0}
+  config:
+    mapSize: 128
+    seed: 0
+    tileMods:
+    - enabled: 1
+      type: 0
+      p1: 3
+      p2: 100
+      p3: 0
+    - enabled: 1
+      type: 0
+      p1: 5
+      p2: 70
+      p3: 0
+    - enabled: 1
+      type: 0
+      p1: 6
+      p2: 10
+      p3: 0
+    - enabled: 1
+      type: 1
+      p1: 50
+      p2: 100
+      p3: 0
+    - enabled: 1
+      type: 2
+      p1: 0
+      p2: 49
+      p3: 2
+    - enabled: 1
+      type: 2
+      p1: 49
+      p2: 51
+      p3: 3
+    - enabled: 1
+      type: 0
+      p1: 5
+      p2: 10
+      p3: 1000
 --- !u!33 &229684441
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -65,8 +106,8 @@ MeshRenderer:
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
   m_MotionVectors: 1
-  m_LightProbeUsage: 1
-  m_ReflectionProbeUsage: 1
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -90,3 +131,17 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+--- !u!64 &480785708
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5594437694685781305}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Convex: 0
+  m_CookingOptions: 14
+  m_Mesh: {fileID: 0}

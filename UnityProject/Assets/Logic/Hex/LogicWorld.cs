@@ -11,39 +11,18 @@ namespace game
 	{
         LogicRandom random = new LogicRandom(0);
 
-		public int foo = 0;
-		public LogicHexMap map = new LogicHexMap(64);
+		public LogicHexMap map;
+        LogicWorldConfig config;
 
-		const int ALTITUDE_SCALE = 16;
+        const int ALTITUDE_SCALE = 16;
 			
-		public void Start()
+		public void Start(LogicWorldConfig config)
 		{
-			UpdateMap();
+            this.config = config;
+            map = new LogicHexMap(config.mapSize);
+
+            UpdateMap();
 		}
-
-        int step = 10;
-        public void StepForward()
-        {
-            ++step;
-        }
-
-        public void StepBackward()
-        {
-            --step;
-            if (step < 1)
-                step = 1;
-        }
-
-        int seed = 0;
-        public void SetSeed(int seed)
-        {
-            this.seed = seed;
-        }
-
-        public int GetSeed()
-        {
-            return seed;
-        }
 
         public const int TILE_SIZE = 150;
         public const int HALF_TILE_SIZE = TILE_SIZE / 2;
@@ -172,18 +151,23 @@ namespace game
 
         public void GenerateMap()
         {
-            random.setIteratedRandomSeed(seed);
+            int seed = config.seed;
 
-            GeneratedTile tile = new GeneratedTile();
+            random.setIteratedRandomSeed(seed);
 
             for (int r = 0; r < map.height; ++r)
             {
                 for (int q = 0; q < map.width; ++q)
                 {
+                    GeneratedTile tile = new GeneratedTile();
 
-                    //int tile = 0;
                     LogicPoint3 pos = HexToLogicPos(new LogicHex(q, r), 0);
-                    GenerateTile(tile, pos.x, pos.z, seed, step);
+
+                    for (int i=0; i < config.tileMods.Count; ++i )
+                    {
+                        LogicTileMod mod = config.tileMods[i];
+                        mod.Execute(tile, pos.x, pos.z, seed);
+                    }
 
                     map.Set(q, r, tile.GetLogicTile());
                 }
@@ -191,7 +175,7 @@ namespace game
 
         }
 
-        public static void GenerateTile(GeneratedTile tile, int x, int y, int seed, int step)
+        /*public static void GenerateTile(GeneratedTile tile, int x, int y, int seed, int step)
         {
             tile.terrain = TerrainType.Grass;
             tile.altitude = LogicTween.SCALE_HALF;
@@ -223,8 +207,8 @@ namespace game
 
             if (step == 5) return;
 
-            if (tile.altitude < LogicTween.SCALE_HALF - 10)
-                tile.altitude = Lerp(tile.altitude, tile.altitude / 2, 20);
+            //if (tile.altitude < LogicTween.SCALE_HALF - 10)
+            //    tile.altitude = Lerp(tile.altitude, tile.altitude / 2, 20);
 
             if (step == 6) return;
 
@@ -241,7 +225,7 @@ namespace game
             if (step == 7) return;
 
             tile.altitude = Lerp(tile.altitude, noise2b, 10);
-        }
+        }*/
 
         public static int Noise(int x, int y, int octave, int seed, int scale)
         {

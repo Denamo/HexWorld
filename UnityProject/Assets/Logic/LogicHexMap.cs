@@ -44,13 +44,15 @@ namespace logic.util
 
         public override void Set(int x, int y, int value)
         {
-            
+
             array[x + (y << sizeShift)] = value;
+            //array[x + (y * width)] = value;
         }
 
         public override int Get(int x, int y)
         {
             return array[x + (y << sizeShift)];
+            //return array[x + (y * width)];
         }
 
         static bool IsPowerOfTwo(int x)
