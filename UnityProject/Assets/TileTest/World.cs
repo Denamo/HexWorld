@@ -7,6 +7,8 @@ public class World : MonoBehaviour
 {
     public GameObject cursor;
 
+    public const int CHUNK_SIZE = 16;
+
     MeshRenderer meshRenderer;
     MeshFilter meshFilter;
     Mesh mesh;
@@ -107,10 +109,8 @@ public class World : MonoBehaviour
 
 		LogicArray2<RenderTile> renderTiles = new LogicArray2<RenderTile>(tiles.width,tiles.height,null);
 
-		DynamicMesh dynamicMesh = new DynamicMesh();
-
-		{ //Vertex creation
-			int index = 0;
+        { //Vertex creation
+            int index = 0;
 			for (int y = 0; y < tiles.height; ++y)
 			{
 				for (int x = 0; x < tiles.width; ++x)
@@ -160,51 +160,91 @@ public class World : MonoBehaviour
 				}
 			}
 		}
-		
-		{ //Triangle creation
-			int index = 0;
-			for (int y = 0; y < renderTiles.height - 1; ++y)
-			{
-				for (int x = 0; x < renderTiles.width - 1; ++x)
-				{
-					RenderTile tile0 = renderTiles.Get(x, y);
-					RenderTile tile1 = renderTiles.Get(x + 1, y);
-					RenderTile tile2 = renderTiles.Get(x, y + 1);
-					RenderTile tile3 = renderTiles.Get(x + 1, y + 1);
 
-                    RenderTriangle(dynamicMesh, tile0, tile1, tile2);
-                    RenderTriangle(dynamicMesh, tile2, tile1, tile3);
+        { //Mesh creation (splitting in chunks, triangulation etc.)
+            int widthInChunks = renderTiles.width / CHUNK_SIZE;
+            int heightInChunks = renderTiles.height / CHUNK_SIZE;
 
-					++index;
-				}
-			}
+            if (chunks == null)
+            {
+                chunks = new LogicArray2<Chunk>(widthInChunks, heightInChunks, null);
+            }
 
-		}
+            for (int cy = 0; cy < heightInChunks; ++cy)
+            {
+                for (int cx = 0; cx < widthInChunks; ++cx)
+                {
+                    DynamicMesh dynamicMesh = new DynamicMesh();
 
+                    //Chunk bounds
+                    int startY = cy * CHUNK_SIZE;
+                    int endY = startY + CHUNK_SIZE;
+                    int startX = cx * CHUNK_SIZE;
+                    int endX = startX + CHUNK_SIZE;
+
+                    if (cx == widthInChunks - 1)
+                        endX--;
+
+                    if (cy == widthInChunks - 1)
+                        endY--;
+
+
+                    for (int y = startY; y < endY; ++y)
+                    {
+                        for (int x = startX; x < endX; ++x)
+                        {
+                            RenderTile tile0 = renderTiles.Get(x, y);
+                            RenderTile tile1 = renderTiles.Get(x + 1, y);
+                            RenderTile tile2 = renderTiles.Get(x, y + 1);
+                            RenderTile tile3 = renderTiles.Get(x + 1, y + 1);
+
+                            RenderTriangle(dynamicMesh, tile0, tile1, tile2);
+                            RenderTriangle(dynamicMesh, tile2, tile1, tile3);
+                        }
+                    }
+
+                    Mesh mesh = dynamicMesh.Create();
+                    Chunk chunk = GetChunk(cy, cx);
+                    chunk.SetMesh(mesh);
+                }
+            }
+        }
+        
         //Debug.Log("Triangles:" + dynamicMesh.triangles.Count + "Vertices:" + dynamicMesh.vertices.Count);
 
-        Mesh mesh = new Mesh();
-        if (dynamicMesh.vertices.Count > 65535)
-        {
-            //TODO: Chunk support
-            //Debug.LogWarning("Vertex count high forced to use 32 bit index.");
-            mesh.indexFormat = UnityEngine.Rendering.IndexFormat.UInt32;
-        }
+        //Mesh mesh = dynamicMesh.Create();
 
-        mesh.vertices = dynamicMesh.vertices.ToArray();
-        mesh.normals = dynamicMesh.normals.ToArray();
-        mesh.triangles = dynamicMesh.triangles.ToArray();
-        mesh.colors32 = dynamicMesh.colors.ToArray();
-        mesh.uv = dynamicMesh.uv.ToArray();
+        //meshFilter.mesh = mesh;
 
-        mesh.RecalculateBounds();
-
-        meshFilter.mesh = mesh;
-
-        meshCollider.sharedMesh = mesh;
+        //meshCollider.sharedMesh = mesh;
         //Debug.Log("NavigationBlob::MeshUpdate duration=" + (Time.realtimeSinceStartup - timer));
         
 
+    }
+
+    private LogicArray2<Chunk> chunks;
+    private Chunk GetChunk(int cx, int cy)
+    {
+        Chunk chunk = chunks.Get(cx, cy);
+        if(chunk==null)
+        {
+            chunk = Chunk.Create(transform, string.Format("Chunk {0}:{1}", cx, cy));
+            chunks.Set(cx, cy, chunk);
+        }
+
+        return chunk;
+    }
+
+    private void DestroyAllChunks()
+    {
+        for(int i = 0; i < chunks.array.Count; ++i)
+        {
+            Chunk chunk = chunks.array[i];
+            if (chunk != null)
+            {
+                Destroy(chunk.gameObject);
+            }
+        }
     }
 
     public static void RenderTriangle(DynamicMesh mesh, RenderTile a, RenderTile b, RenderTile c)
@@ -375,57 +415,3 @@ public class RenderTile
 	}
 }
 
-public class DynamicMesh
-{
-    public List<Vector3> vertices;
-    public List<Vector3> normals;
-    public List<int> triangles;
-    public List<Color32> colors;
-    public List<Vector2> uv;
-
-    public DynamicMesh()
-    {
-        vertices = new List<Vector3>();
-        normals = new List<Vector3>();
-        triangles = new List<int>();
-        colors = new List <Color32>();
-        uv = new List<Vector2>();
-    }
-
-    public void SimpleTriangle(Vector3 a, Vector3 b, Vector3 c)
-    {
-        SimpleTriangle(a, b, c, Color.white, Color.white, Color.white);
-    }
-
-    public void SimpleTriangle(Vector3 a, Vector3 b, Vector3 c, Color32 aColor, Color32 bColor, Color32 cColor )
-	{
-		SimpleTriangle(a, b, c, aColor, bColor, cColor, Vector3.up, Vector3.up, Vector3.up);
-	}
-
-	public void SimpleTriangle(Vector3 a, Vector3 b, Vector3 c, Color32 aColor, Color32 bColor, Color32 cColor, Vector3 aNormal, Vector3 bNormal, Vector3 cNormal)
-	{
-		int index = vertices.Count;
-
-        vertices.Add(a);
-        vertices.Add(b);
-        vertices.Add(c);
-
-        colors.Add(aColor);
-        colors.Add(bColor);
-        colors.Add(cColor);
-
-        uv.Add(new Vector2(a.x, a.z));
-        uv.Add(new Vector2(b.x, b.z));
-        uv.Add(new Vector2(c.x, c.z));
-
-        normals.Add(aNormal);
-        normals.Add(bNormal);
-        normals.Add(cNormal);
-
-        triangles.Add(index);
-        triangles.Add(index + 1);
-        triangles.Add(index + 2);
-    }
-
-
-}
