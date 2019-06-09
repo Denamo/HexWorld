@@ -44,7 +44,7 @@ public class World : MonoBehaviour
     int seedStepVelocity = 0;
     void Update()
     {
-        if (Input.GetKey(KeyCode.LeftArrow))
+        /*if (Input.GetKey(KeyCode.LeftArrow))
         {
             seedStepVelocity -= 100;
             if (seedStepVelocity < -5000)
@@ -60,7 +60,7 @@ public class World : MonoBehaviour
         else
         {
             seedStepVelocity = seedStepVelocity / 2;
-        }
+        }*/
 
         if (seedStepVelocity != 0)
         {
@@ -382,11 +382,12 @@ public class World : MonoBehaviour
     Vector3 HexToWorldPos(LogicHex hex)
     {
         LogicPoint3 p = world.HexToLogicPos(hex);
-        return new Vector3(p.x * tileScaleFactor, p.y * tileScaleFactor, p.z * tileScaleFactor);
+        return new Vector3(p.x * tileScaleFactor, p.y * tileScaleFactor - 14f, p.z * tileScaleFactor);
     }
 
     LogicHex WorldToHexPos(Vector3 pos)
     {
+
         LogicPoint3 p = new LogicPoint3( (int)(pos.x/tileScaleFactor) + LogicWorld.HALF_TILE_SIZE, (int)(pos.y/tileScaleFactor) + LogicWorld.HALF_TILE_SIZE, (int)(pos.z/tileScaleFactor) + LogicWorld.HALF_TILE_SIZE);
         return LogicWorld.LogicToHexPos(p);
     }
